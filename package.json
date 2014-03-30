@@ -1,0 +1,28 @@
+{
+    "name": "tug",
+    "version": "0.1.0",
+    "description": "tug at the heart of your deployment process",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/spro/tug.git"
+    },
+    "author": {
+        "name": "Sean Robertson",
+        "url": "http://sprobertson.com/"
+    },
+    "keywords": [
+        "deployment",
+        "automation",
+        "prontotype"
+    ],
+    "bin": {
+        "tug": "./index.js"
+    },
+    "scripts": {
+        "build": "./build.sh"
+    },
+    "dependencies": {
+        "ssh2": "0.2.x",
+        "sshconf-stream": "0.1.x"
+    }
+}
