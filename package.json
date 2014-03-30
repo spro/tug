@@ -1,6 +1,6 @@
 {
     "name": "tug",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "tug at the heart of your deployment process",
     "repository": {
         "type": "git",
