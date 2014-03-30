@@ -1,6 +1,5 @@
 fs = require 'fs'
 path = require 'path'
-iniparser = require 'iniparser'
 ssh = require 'sshconf-stream'
 ssh_conn = new require('ssh2')()
 
