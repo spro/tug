@@ -1,6 +1,6 @@
 {
     "name": "tug",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "tug at the heart of your deployment process",
     "repository": {
         "type": "git",
@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "ssh2": "0.2.x",
+        "minimist": "0.0.x",
         "sshconf-stream": "0.1.x"
     }
 }
