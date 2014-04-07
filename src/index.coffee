@@ -1,7 +1,9 @@
 fs = require 'fs'
 path = require 'path'
-optimist = require 'optimist'
+minimist = require 'minimist'
 ssh = require 'sshconf-stream'
+
+argv = minimist process.argv.slice 2
 
 # Helper functions
 
@@ -16,7 +18,7 @@ resolvePath = (string) ->
 # which refers to an equivalently named .tug file in the user's
 # ~/.tug directory.
 
-tugfile_name = process.argv[2]
+tugfile_name = argv._[0]
 tugfile_filename = resolvePath "~/.tug/#{ tugfile_name }.tug"
 
 tugfile = {}
@@ -52,6 +54,9 @@ step_script = (step_name) ->
 
 tugfile.steps = tugfile_keys.filter((k) -> k[..3] == 'step').map((s) -> s.slice(5))
 tugfile.hosts = tugfile.hosts.trim().split('\n')
+if argv.hosts? or argv.h?
+    argv_hosts = (argv.hosts || argv.h).split(',')
+    tugfile.hosts = tugfile.hosts.filter((h) -> h in argv_hosts)
 
 # Executing the script
 #
