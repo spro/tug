@@ -3,7 +3,7 @@ tug
 
 tug at the heart of your deployment process
 
-![tugboat](/tugboat.png)
+![tugboat](https://github.com/spro/tug/blob/master/tugboat.png?raw=true)
 
 Tug is a super-simple tool to make remote server administration a tiny bit easier. It lets you define common tasks as sets of shell scripts, and provides a simple way to execute those scripts remotely from the comfort of your local shell.
 
