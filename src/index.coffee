@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 minimist = require 'minimist'
+async = require 'async'
 ssh = require 'sshconf-stream'
 
 argv = minimist process.argv.slice 2
@@ -49,14 +50,18 @@ if _key? && _val?
 
 # Combine script into one line by joining commands with &&
 
-step_script = (step_name) ->
+makeStepScript = (step_name) ->
     tugfile['step ' + step_name].trim().split('\n').join(' && ')
 
 tugfile.steps = tugfile_keys.filter((k) -> k[..3] == 'step').map((s) -> s.slice(5))
 tugfile.hosts = tugfile.hosts.trim().split('\n')
 if argv.hosts? or argv.h?
     argv_hosts = (argv.hosts || argv.h).split(',')
-    tugfile.hosts = tugfile.hosts.filter((h) -> h in argv_hosts)
+    tugfile.hosts = tugfile.hosts.filter (h) -> h in argv_hosts
+
+if argv.steps? or argv.step? or argv.s?
+    argv_steps = (argv.steps || argv.step || argv.s).split(',')
+    tugfile.steps = tugfile.steps.filter (s) -> s in argv_steps
 
 # Executing the script
 #
@@ -67,23 +72,23 @@ if argv.hosts? or argv.h?
 # Read SSH host data from ~/.ssh/config and determine which host to connect to
 
 fs.createReadStream(resolvePath '~/.ssh/config').pipe(ssh.createParseStream()).on 'data', (_host_data) ->
-    host_data = coerce_sshconf_host _host_data
-    connect_to_host host_data if host_data.host in tugfile.hosts
+    host_data = coerceSshconfHost _host_data
+    connectToHost host_data if host_data.host in tugfile.hosts
 
 # Turn the data returned by sshconf-stream into a nicer format
 # TODO: Find or create a better ssh config parser
 
-coerce_sshconf_host = (host_data) ->
+coerceSshconfHost = (host_data) ->
     coerced_host_data = {}
     for k, v of host_data.keywords
         coerced_host_data[k.toLowerCase()] = v[0]
     return coerced_host_data
 
-execute_steps = (ssh_conn, steps) ->
+executeSteps = (ssh_conn, steps) ->
 
 # Connecting to a host with the information retreived from ~/.ssh/config
 
-connect_to_host = (host_data) ->
+connectToHost = (host_data) ->
     privateKeyFilename = host_data.identityfile || '~/.ssh/id_rsa'
     privateKey = require('fs').readFileSync resolvePath privateKeyFilename
 
@@ -93,13 +98,19 @@ connect_to_host = (host_data) ->
         username: host_data.user || process.env.USER
         privateKey: privateKey
 
-    # Once connected, run the deploy script and output the output
-    steps_script = tugfile.steps.map(step_script).join(' && ')
+    # Once connected, run the steps and output the output
 
     ssh_conn.on 'ready', ->
-        ssh_conn.exec steps_script, (err, stream) ->
-            stream.on 'data', (data) ->
-                console.log "[#{ host_data.host }]\n#{ data.toString() }"
-            stream.on 'exit', ->
-                ssh_conn.end()
+        async.map tugfile.steps, (s, _cb) ->
+
+            step_script = makeStepScript s
+            ssh_conn.exec step_script, (err, stream) ->
+                stream_output = ''
+                stream.on 'data', (data) ->
+                    stream_output += data.toString()
+                stream.on 'exit', ->
+                    console.log "[#{ host_data.host }]\n#{ stream_output }"
+                    _cb()
+
+        , -> ssh_conn.end()
 
