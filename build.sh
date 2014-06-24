@@ -2,9 +2,8 @@
 
 echo "Building tug..."
 
-# Ugly hack to prepend shebang
+# Compile and prepend shebang to make index.js executable
 
-coffee -o . -c src # Compile coffee source
-echo "#!/usr/bin/env node\n" > ./index.js.tmp # Write shebang line to tmp file
-cat ./index.js >> ./index.js.tmp # Then cat compiled JS into tmp file
-mv ./index.js.tmp ./index.js # Then make tmp file the real file
+echo "#!/usr/bin/env node\n" > ./index.js # Write shebang line to index file
+coffee -p -c src/tug.coffee >> ./index.js # Then append compiled coffee source
+
