@@ -7,9 +7,15 @@ tug at the heart of your deployment process
 
 Tug is a super-simple tool to make remote server administration a tiny bit easier. It lets you define common tasks as sets of shell scripts, and provides a simple way to execute those scripts remotely from the comfort of your local shell.
 
-### 1. Define a tug script.
+### 1. Install
 
-Let's say we want to deploy our website (boat.com) by pulling from a git repository and restarting nginx. We have three hosts to deploy updates to, (each of which has an entry in `~/.ssh/config`). Create a `.tug` file called `~/.tug/boat.tug` like so:
+Install `tug` globally with  `npm install -g tug`
+
+### 2. Define a tug script
+
+We want to deploy our website, *boat.com*, by pulling updates from a git repository, building the dependencies, and restarting the HTTP daemon. We have three load-balanced web servers and we need to perform the same steps on each.
+
+Make sure each host has an entry in `~/.ssh/config`, and create a `.tug` file called `~/.tug/boat.tug`:
 
 ```
 [hosts]
@@ -29,7 +35,7 @@ make
 nginx -s reload
 ```
 
-### 2. Run it.
+### 3. `tug`
 
 ```
 tug boat
