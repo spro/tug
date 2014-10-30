@@ -84,8 +84,6 @@ coerceSshconfHost = (host_data) ->
         coerced_host_data[k.toLowerCase()] = v[0]
     return coerced_host_data
 
-executeSteps = (ssh_conn, steps) ->
-
 # Connecting to a host with the information retreived from ~/.ssh/config
 
 connectToHost = (host_data) ->
@@ -101,7 +99,7 @@ connectToHost = (host_data) ->
     # Once connected, run the steps and output the output
 
     ssh_conn.on 'ready', ->
-        async.map tugfile.steps, (s, _cb) ->
+        async.mapSeries tugfile.steps, (s, _cb) ->
 
             step_script = makeStepScript s
             ssh_conn.exec step_script, (err, stream) ->
@@ -109,7 +107,7 @@ connectToHost = (host_data) ->
                 stream.on 'data', (data) ->
                     stream_output += data.toString()
                 stream.on 'exit', ->
-                    console.log "[#{ host_data.host }]\n#{ stream_output }"
+                    console.log "[#{ host_data.host }] #{ s }\n> #{ step_script }\n#{ stream_output }"
                     _cb()
 
         , -> ssh_conn.end()
