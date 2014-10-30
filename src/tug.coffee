@@ -22,8 +22,17 @@ resolvePath = (string) ->
 tugfile_name = argv._[0]
 tugfile_filename = resolvePath "~/.tug/#{ tugfile_name }.tug"
 
-tugfile = {}
-tugfile_keys = []
+# Show alternative tugfiles if the specified one is not found
+
+if !fs.existsSync tugfile_filename
+    levenshtein = require 'levenshtein'
+    tugfiles_available = fs.readdirSync resolvePath "~/.tug/"
+    tugfile_distances = tugfiles_available.map (f) ->
+        filename: f.split('.')[0]
+        distance: levenshtein(tugfile_name, f[0..tugfile_name.length-1])
+    tugfile_distances.sort (a, b) -> a.distance - b.distance
+    console.log "Tugfile not found. Did you mean `tug #{ tugfile_distances[0].filename }`?"
+    process.exit()
 
 # Read through each line in the .tug file to parse
 #
@@ -31,7 +40,10 @@ tugfile_keys = []
 # each key sits on one line [in brackets], its corresponding value
 # is any number of lines of text below it.
 
+tugfile = {}
+tugfile_keys = []
 tugfile_lines = fs.readFileSync(tugfile_filename).toString().trim().split('\n')
+
 _key = null
 _val = ''
 for line in tugfile_lines
