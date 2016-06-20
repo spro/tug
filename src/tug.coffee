@@ -78,17 +78,16 @@ if argv.hosts? or argv.h?
     argv_hosts = (argv.hosts || argv.h).split(',')
     tugfile.hosts = tugfile.hosts.filter (h) -> h in argv_hosts
 
-# Run a specific step if given with --step or -s
-if argv_steps = (argv.steps or argv.step or argv.s)
+# Run all steps with -a or --all
+if argv.all or argv.a
+    # Keep steps as they are
 
-    # If the step is 'all', run all steps
-    if argv_steps == 'all'
-        # Let it use all steps
-    else
-        argv_steps = argv_steps.split(',')
-        tugfile.steps = tugfile.steps.filter (s) -> s in argv_steps
+# Run a specific step with --step or -s
+else if argv_steps = (argv.steps or argv.step or argv.s)
+    argv_steps = argv_steps.split(',')
+    tugfile.steps = tugfile.steps.filter (s) -> s in argv_steps
 
-# Otherwise only run the first step
+# Otherwise run the first step
 else
     tugfile.steps = tugfile.steps.slice(0, 1)
 
