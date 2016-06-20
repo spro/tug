@@ -1,6 +1,6 @@
 {
     "name": "tug",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "description": "tug at the heart of your deployment process",
     "repository": {
         "type": "git",
@@ -19,13 +19,13 @@
         "tug": "./index.js"
     },
     "scripts": {
-        "build": "./build.sh"
+        "build": "make"
     },
     "dependencies": {
         "async": "0.2.x",
         "minimist": "0.0.x",
         "levenshtein": "1.0.x",
         "ssh2": "0.2.x",
-        "sshconf-stream": "0.1.x"
+        "sshconf-stream": "0.1.2"
     }
 }
