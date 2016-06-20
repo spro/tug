@@ -37,8 +37,27 @@ nginx -s reload
 
 ### 3. `tug`
 
+By default the first step in the tugfile is run:
+
 ```
 tug boat
+```
+
+```
+[www1.boat.com]
+... git updated
+
+[www2.boat.com]
+... git updated
+
+[www3.boat.com]
+... git updated
+```
+
+To run all steps, use the `-a` or `--all` option:
+
+```
+tug boat -a
 ```
 
 ```
@@ -57,8 +76,6 @@ tug boat
 ... project built
 ... nginx reloaded
 ```
-
-That's it! The steps are run in order on each host.
 
 #### Running specific steps
 
@@ -99,3 +116,20 @@ Again optionally specify multiple with commas:
 ```
 tug boat -h www2.boat.com,www3.boat.com -s update,build
 ```
+
+#### Local .tug files
+
+As an alternative to using a central `~/.tug` directory, you can include a single `.tug` file in your project directory. Tug will look for this file if a name is not specified:
+
+```
+cd test
+tug -a
+```
+
+```
+[www.test.com]
+... git updated
+... project built
+... nginx reloaded
+```
+
