@@ -24,7 +24,7 @@ tugfile_filename = resolvePath "~/.tug/#{ tugfile_name }.tug"
 local_tugfile_filename = resolvePath "./.tug"
 
 # Use the local .tug tugfile if available
-if fs.existsSync local_tugfile_filename
+if !tugfile_name && fs.existsSync local_tugfile_filename
     tugfile_filename = local_tugfile_filename
 
 # Show possible tugfiles if the specified one is not found
