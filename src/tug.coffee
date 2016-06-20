@@ -21,10 +21,14 @@ resolvePath = (string) ->
 
 tugfile_name = argv._[0]
 tugfile_filename = resolvePath "~/.tug/#{ tugfile_name }.tug"
+local_tugfile_filename = resolvePath "./.tug"
 
-# Show alternative tugfiles if the specified one is not found
+# Use the local .tug tugfile if available
+if fs.existsSync local_tugfile_filename
+    tugfile_filename = local_tugfile_filename
 
-if !fs.existsSync tugfile_filename
+# Show possible tugfiles if the specified one is not found
+else if !fs.existsSync tugfile_filename
     levenshtein = require 'levenshtein'
     tugfiles_available = fs.readdirSync resolvePath "~/.tug/"
     tugfile_distances = tugfiles_available.map (f) ->
@@ -46,6 +50,7 @@ tugfile_lines = fs.readFileSync(tugfile_filename).toString().trim().split('\n')
 
 _key = null
 _val = ''
+
 for line in tugfile_lines
     if key_matched = line.match /^\[(.+)\]$/
         if _key? && _val?
@@ -56,6 +61,8 @@ for line in tugfile_lines
     else
         if _key?
             _val += line + '\n'
+
+# Capture the last group as well
 if _key? && _val?
     tugfile_keys.push _key
     tugfile[_key] = _val.trim()
